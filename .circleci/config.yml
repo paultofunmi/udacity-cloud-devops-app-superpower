@@ -104,14 +104,6 @@ jobs:
             npm audit fix --audit-level=critical --force
             # If the "npm audit fix" command above could not fix all critical vulnerabilities, try “npm audit fix --force” again
             npm audit --audit-level=critical
-      - slack/notify:
-          channel: buildstatus-dev
-          event: fail
-          template: basic_fail_1
-      - slack/notify:
-          channel: buildstatus-dev
-          event: pass
-          template: success_tagged_deploy_1
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
@@ -147,10 +139,11 @@ workflows:
       - build-backend
       - test-frontend:
           requires: [build-frontend]
+          context: UDACITY-CLOUDDEVOPS
       - test-backend:
           requires: [build-backend]
+          context: UDACITY-CLOUDDEVOPS
       - scan-frontend:
           requires: [build-frontend]
-          context: UDACITY-CLOUDDEVOPS
       - scan-backend:
           requires: [build-backend]
