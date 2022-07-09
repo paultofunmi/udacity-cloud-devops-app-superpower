@@ -51,6 +51,14 @@ jobs:
             cd frontend
             npm install
             npm run test
+      - slack/notify:
+          channel: buildstatus-dev
+          event: fail
+          template: basic_fail_1
+      - slack/notify:
+          channel: buildstatus-dev
+          event: pass
+          template: success_tagged_deploy_1
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
@@ -68,6 +76,14 @@ jobs:
             cd backend
             npm install
             npm run test
+      - slack/notify:
+          channel: buildstatus-dev
+          event: fail
+          template: basic_fail_1
+      - slack/notify:
+          channel: buildstatus-dev
+          event: pass
+          template: success_tagged_deploy_1
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
