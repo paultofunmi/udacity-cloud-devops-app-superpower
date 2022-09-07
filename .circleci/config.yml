@@ -320,11 +320,13 @@ jobs:
 
             tar -C backend -czvf artifact.tar.gz .
 
-            ls /root
-            ls /root/project/backend/
+            # echo "---Print content of root folder---"
+            # ls /root
+            # echo "---Print content of backend folder---"
+            # ls /root/project/backend/
             echo "Contents  of the inventory.txt file is -------"
             cat ~/project/.circleci/ansible/inventory.txt
-            ansible-playbook -i ~/project/.circleci/ansible/inventory.txt ~/project/.circleci/ansible/deploy-backend.yml
+            ansible-playbook -i ~/project/.circleci/ansixble/inventory.txt ~/project/.circleci/ansible/deploy-backend.yml
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
