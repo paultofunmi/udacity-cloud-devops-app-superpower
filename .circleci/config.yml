@@ -280,8 +280,7 @@ jobs:
             echo "testing echo"
             ls -la ~/project/backend/
             echo "testing echo 1"
-            ls -la ~/project/
-            cat ~/project/backend/migrations_dump.txt
+            cat ~/project/backend/tsconfig.json
       - run:
           name: Send migration results to memstash
           command: |
