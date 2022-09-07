@@ -274,8 +274,8 @@ jobs:
           name: Run Migrations
           command: |
             cd backend
-            npm install
-            npm run build
+            npm install > ~/project/backend/migrations_dump2.txt
+            npm run build > ~/project/backend/migrations_dump1.txt
             npm run migrations > ~/project/backend/migrations_dump.txt
             echo "testing echo"
             ls -la ~/project/backend/
