@@ -260,8 +260,6 @@ jobs:
   deploy-frontend:
     docker:
       - image: sleavely/node-awscli:14.x
-    steps:
-      - checkout
       - attach_workspace:
           at: /root
       - run:
@@ -351,9 +349,9 @@ workflows:
           requires: [deploy-infrastructure]
       - run-migrations:
           requires: [configure-infrastructure]
-      - deploy-backend:
-          requires:
-            - run-migrations
+      # - deploy-backend:
+      #     requires:
+      #       - run-migrations
       - deploy-frontend:
           requires:
             - run-migrations
