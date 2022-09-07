@@ -234,10 +234,9 @@ jobs:
       - checkout
       - run:
           name: Run migrations
+          working_directory: ./backend
           command: |
-            cd backend
-            cat .env
-            npm i
+            npm install
             npm run build
             npm run migrations
       - run:
@@ -276,7 +275,7 @@ jobs:
           name: Deploy frontend objects
           working_directory: ./frontend
           command: |
-            npm i
+            npm install
             npm run build
             ls -l
             aws s3 cp ./dist "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}" --recursive
