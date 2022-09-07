@@ -242,8 +242,10 @@ jobs:
       - run:
           name: Send migration results to memstash
           command: |
-            echo "has been done successfully" > ./migration_status.txt
+            echo "has been done successfully" >> ./migration_status.txt
             pwd && ls -al
+            echo "migration status file"
+            cat ./migration_status.txt
             if grep -q "has been done successfully" ./migration_status.txt 
             then 
               echo "has been done successfully"
@@ -261,7 +263,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: ~/
+          at: /root
       - run:
           name: Get backend url
           command: |
@@ -278,7 +280,52 @@ jobs:
             npm install
             npm run build
             ls -l
+            tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp ./dist "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}" --recursive
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+
+  deploy-backend:
+    docker:
+      - image: python:3.7-alpine3.11
+        environment:
+          NODE_ENV: "local"
+          VERSION: "1"
+          ENVIRONMENT: "production"
+          TYPEORM_CONNECTION: $TYPEORM_CONNECTION
+          TYPEORM_HOST: $TYPEORM_HOST
+          TYPEORM_USERNAME: $TYPEORM_USERNAME
+          TYPEORM_PASSWORD: $TYPEORM_PASSWORD
+          TYPEORM_DATABASE: $TYPEORM_DATABASE
+          TYPEORM_PORT: $TYPEORM_PORT
+          TYPEORM_ENTITIES: $TYPEORM_ENTITIES
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["71:1b:21:3d:8c:d4:50:7e:dd:f5:6c:2b:f4:bf:ef:c1"]
+      - attach_workspace:
+          at: /root
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update ansible rsync 
+            apk add curl
+            pip3 install awscli
+      - run:
+          name: Deploy backend
+          command: |
+            cd backend
+            npm i
+            npm run build
+            cd ..
+
+            tar -C backend -czvf artifact.tar.gz .
+
+            ls /root
+            ls /root/project/backend/
+            echo "Contents  of the inventory.txt file is -------"
+            cat ~/project/.circleci/ansible/inventory.txt
+            ansible-playbook -i ~/project/.circleci/ansible/inventory.txt ~/project/.circleci/ansible/deploy-backend.yml
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
@@ -304,12 +351,12 @@ workflows:
           requires: [deploy-infrastructure]
       - run-migrations:
           requires: [configure-infrastructure]
-      # - deploy-backend:
-      #     requires:
-      #       - run-migrations
-      # - deploy-frontend:
-      #     requires:
-      #       - run-migrations
+      - deploy-backend:
+          requires:
+            - run-migrations
+      - deploy-frontend:
+          requires:
+            - run-migrations
       # - smoke-test:
       #     requires: [deploy-backend, deploy-frontend]
       # - cloudfront-update:
