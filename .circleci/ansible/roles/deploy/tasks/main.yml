@@ -13,6 +13,13 @@
   become: true
   shell: |
     cd /home/ubuntu/
+    apt update
+    apt install nodejs
+    apt install npm
+    echo "---Node version---"
+    echo node -v
+    echo "---Npm version---"
+    echo npm -v
     npm install
     pm2 stop default
     pm2 start npm -- start
